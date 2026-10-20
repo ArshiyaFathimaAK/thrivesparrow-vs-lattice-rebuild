@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ThriveSparrow vs Lattice — the real line item</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10151B;
+    --paper:#F2F0E8;
+    --paper-dim:#E7E3D7;
+    --gold:#B9842A;
+    --teal:#1F6F64;
+    --muted:#5B6168;
+    --line:rgba(16,21,27,0.14);
+    --card:#FFFFFF;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#F2F0E8;
+      --paper:#14181D;
+      --paper-dim:#1B2025;
+      --gold:#E0A94B;
+      --teal:#5FB3A4;
+      --muted:#9BA2A9;
+      --line:rgba(242,240,232,0.14);
+      --card:#1A1F24;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#F2F0E8;
+    --paper:#14181D;
+    --paper-dim:#1B2025;
+    --gold:#E0A94B;
+    --teal:#5FB3A4;
+    --muted:#9BA2A9;
+    --line:rgba(242,240,232,0.14);
+    --card:#1A1F24;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:17px;
+    line-height:1.6;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  a{color:inherit;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 28px;}
+  .serif{font-family:'Fraunces', serif;}
+
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:22px 0;
+  }
+  .brandrow{display:flex; justify-content:space-between; align-items:center; max-width:760px; margin:0 auto; padding:0 28px;}
+  .brand{font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; letter-spacing:0.01em;}
+  .brand .vs{color:var(--muted); font-weight:400; font-style:italic;}
+  .cta-link{font-size:0.9rem; text-decoration:none; border-bottom:1px solid var(--ink); padding-bottom:2px;}
+
+  .hero{padding:72px 0 48px;}
+  .hero .kicker{color:var(--gold); font-weight:500; font-size:0.95rem; margin-bottom:18px;}
+  .hero h1{
+    font-size:clamp(2.1rem, 5vw, 3.1rem);
+    line-height:1.12;
+    font-weight:500;
+    margin:0 0 22px;
+    max-width:14ch;
+  }
+  .hero p.lead{font-size:1.15rem; color:var(--muted); max-width:52ch; margin:0 0 30px;}
+  .hero .stat-row{display:flex; gap:40px; flex-wrap:wrap; margin-top:8px;}
+  .stat .num{font-family:'Fraunces', serif; font-size:2.1rem; font-weight:500; color:var(--teal);}
+  .stat .label{font-size:0.88rem; color:var(--muted); max-width:18ch;}
+
+  section{padding:46px 0; border-top:1px solid var(--line);}
+  h2.section-title{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.65rem;
+    margin:0 0 10px;
+    max-width:22ch;
+  }
+  p.section-sub{color:var(--muted); max-width:56ch; margin:0 0 30px;}
+
+  /* line-item table */
+  .ledger{border-top:1px solid var(--line);}
+  .ledger-row{
+    display:grid;
+    grid-template-columns: 1fr auto auto;
+    gap:18px;
+    align-items:center;
+    padding:16px 0;
+    border-bottom:1px dotted var(--line);
+  }
+  .ledger-row.subtotal{
+    border-bottom:none;
+    border-top:1.5px solid var(--ink);
+    padding-top:20px;
+    margin-top:4px;
+  }
+  .ledger-row.subtotal .item{font-family:'Fraunces', serif; font-weight:500;}
+  .ledger-row.subtotal .cell{font-weight:600;}
+  @media (max-width:520px){
+    .ledger-head{display:none;}
+    .ledger-row{grid-template-columns:1fr; gap:4px; row-gap:6px; padding:14px 0;}
+    .ledger-row .cell{text-align:left; min-width:0;}
+    .ledger-row .cell::before{content:attr(data-label) ": "; color:var(--muted); font-weight:400;}
+  }
+  .ledger-row .item{font-weight:500;}
+  .ledger-row .note{display:block; color:var(--muted); font-size:0.88rem; font-weight:400; margin-top:3px;}
+  .ledger-row .cell{font-size:0.92rem; text-align:right; min-width:108px;}
+  .ledger-head{display:grid; grid-template-columns:1fr auto auto; gap:18px; padding:0 0 10px; font-size:0.82rem; color:var(--muted);}
+  .ledger-head .cell{text-align:right; min-width:108px;}
+  .tag-included{color:var(--teal); font-weight:500;}
+  .tag-extra{color:var(--gold); font-weight:500;}
+
+  /* day-in-the-life */
+  .scenario-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+  @media (max-width:640px){ .scenario-grid{grid-template-columns:1fr;} }
+  .scenario-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:24px;
+  }
+  .scenario-card h3{font-family:'Fraunces', serif; font-weight:500; font-size:1.1rem; margin:0 0 14px;}
+  .scenario-card ol{margin:0; padding-left:20px; font-size:0.95rem;}
+  .scenario-card li{margin-bottom:9px;}
+  .scenario-card.ours{border-color:var(--teal); border-width:1.5px;}
+  .time{font-size:0.82rem; color:var(--muted); font-weight:500; display:block; margin-top:16px;}
+
+  .honest{
+    background:var(--paper-dim);
+    border-left:3px solid var(--gold);
+    padding:22px 26px;
+    border-radius:0 4px 4px 0;
+  }
+  .honest p{margin:0 0 12px;}
+  .honest p:last-child{margin-bottom:0;}
+
+  .price-compare{display:flex; gap:28px; flex-wrap:wrap; margin-top:26px;}
+  .price-card{flex:1; min-width:220px;}
+  .price-card .who{font-size:0.85rem; color:var(--muted); margin-bottom:6px;}
+  .price-card .amount{font-family:'Fraunces', serif; font-size:1.8rem; font-weight:500;}
+  .price-card .per{font-size:0.85rem; color:var(--muted);}
+  .price-card.them .amount{color:var(--muted);}
+  .price-card.us .amount{color:var(--teal);}
+
+  footer.close{
+    padding:60px 0 70px;
+    text-align:left;
+  }
+  footer.close h2{font-family:'Fraunces', serif; font-weight:500; font-size:1.8rem; margin:0 0 18px; max-width:18ch;}
+  .btn{
+    display:inline-block;
+    background:var(--ink);
+    color:var(--paper);
+    text-decoration:none;
+    padding:13px 26px;
+    border-radius:3px;
+    font-size:0.95rem;
+    font-weight:500;
+  }
+  .fineprint{margin-top:28px; font-size:0.82rem; color:var(--muted); max-width:56ch;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brandrow">
+    <div class="brand">ThriveSparrow <span class="vs">vs. Lattice</span></div>
+    <a class="cta-link" href="#close">See the line item ↓</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero" style="border-top:none;">
+    <div class="kicker">For HR leaders comparing platforms, not features</div>
+    <h1 class="serif">Lattice prices performance management. We priced the whole employee lifecycle.</h1>
+    <p class="lead">Most comparison pages count checkmarks. This one counts the invoices you'd actually sign if you went with each platform — because that's the decision you're really making.</p>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="num">3</div>
+        <div class="label">separate tools Lattice teams often still pay for elsewhere</div>
+      </div>
+      <div class="stat">
+        <div class="num">1</div>
+        <div class="label">platform it takes with ThriveSparrow</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">What's actually in the box</h2>
+    <p class="section-sub">Not a checkmark grid — the line items an HR team ends up paying for, with or without the vendor's logo on them.</p>
+
+    <div class="ledger">
+      <div class="ledger-head">
+        <div></div>
+        <div class="cell">Lattice</div>
+        <div class="cell">ThriveSparrow</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="item">360° performance reviews<span class="note">Core to both platforms</span></div>
+        <div class="cell tag-included" data-label="Lattice">Included</div>
+        <div class="cell tag-included" data-label="ThriveSparrow">Included</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="item">Engagement &amp; pulse surveys<span class="note">Lattice sells this as an add-on module</span></div>
+        <div class="cell tag-extra" data-label="Lattice">Add-on</div>
+        <div class="cell tag-included" data-label="ThriveSparrow">Included</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="item">Peer recognition + rewards marketplace<span class="note">Teams on Lattice often bolt on Bonusly or similar</span></div>
+        <div class="cell tag-extra" data-label="Lattice">Not offered</div>
+        <div class="cell tag-included" data-label="ThriveSparrow">Included</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="item">AI sentiment analysis on open-text feedback<span class="note">Reading between the lines of survey comments</span></div>
+        <div class="cell tag-extra" data-label="Lattice">Not offered</div>
+        <div class="cell tag-included" data-label="ThriveSparrow">Included</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="item">Goal / OKR tracking<span class="note">Both platforms cover this reasonably well</span></div>
+        <div class="cell tag-included" data-label="Lattice">Included</div>
+        <div class="cell tag-included" data-label="ThriveSparrow">Included</div>
+      </div>
+
+      <div class="ledger-row">
+        <div class="item">Dedicated implementation support<span class="note">Who answers when your rollout breaks</span></div>
+        <div class="cell" data-label="Lattice" style="color:var(--muted);">Tiered by plan</div>
+        <div class="cell tag-included" data-label="ThriveSparrow">Included at every tier</div>
+      </div>
+
+      <div class="ledger-row subtotal">
+        <div class="item">Modules you'd pay for separately</div>
+        <div class="cell" data-label="Lattice">3 extra</div>
+        <div class="cell tag-included" data-label="ThriveSparrow">0 extra</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">The same Tuesday, two platforms</h2>
+    <p class="section-sub">A people ops manager wants to recognize a team that just shipped something hard, and surface whether morale is actually holding up underneath the praise.</p>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <h3>With Lattice</h3>
+        <ol>
+          <li>Posts public recognition in Lattice's praise feed.</li>
+          <li>Opens a separate pulse-survey add-on (or a third-party tool) to check engagement.</li>
+          <li>Exports two sets of results and reconciles them manually before the Monday leadership sync.</li>
+        </ol>
+        <span class="time">Roughly three tools, one spreadsheet.</span>
+      </div>
+      <div class="scenario-card ours">
+        <h3>With ThriveSparrow</h3>
+        <ol>
+          <li>Sends Kudos with points attached, redeemable in the built-in rewards marketplace.</li>
+          <li>Launches a two-minute pulse check from the same dashboard.</li>
+          <li>Reads AI sentiment analysis on the open-text responses before the sync even starts.</li>
+        </ol>
+        <span class="time">One login, one afternoon.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Where Lattice still wins</h2>
+    <div class="honest">
+      <p>We'd be overselling it to say ThriveSparrow is the better fit for every team. Lattice has a longer track record with large, multi-thousand-employee enterprises, a bigger marketplace of HRIS integrations, and more name recognition in board-level conversations.</p>
+      <p>If your HR stack is already deeply built around Lattice's ecosystem, or you need integrations we don't yet support, switching has a real cost. ThriveSparrow is the stronger case for mid-sized, growth-stage teams who want engagement, recognition, and performance under one roof without assembling it themselves.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">What the sticker price doesn't show</h2>
+    <p class="section-sub">Lattice's advertised rate covers performance only. Add engagement and recognition modules, and the per-employee number moves.</p>
+    <div class="price-compare">
+      <div class="price-card them">
+        <div class="who">Lattice, performance only</div>
+        <div class="amount">$8</div>
+        <div class="per">per employee / month, before add-ons</div>
+      </div>
+      <div class="price-card us">
+        <div class="who">ThriveSparrow, performance + engagement + recognition</div>
+        <div class="amount">$5</div>
+        <div class="per">per employee / month, starting tier</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="close" id="close">
+    <h2>See what it looks like with your team's numbers in it</h2>
+    <a class="btn" href="https://thrivesparrow.com/request-a-demo" target="_blank" rel="noopener">Book a 20-minute demo</a>
+    <p class="fineprint">Pricing shown reflects published starting rates as of October 2026 and may vary by plan and company size. This page is an independent rebuild of ThriveSparrow's official comparison page, created as part of a product marketing assignment, and is not an official ThriveSparrow property.</p>
+  </footer>
+
+</div>
+</body>
+</html>
